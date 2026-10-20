@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#180d1b" />
+    <meta
+      name="description"
+      content="Một món quà nhỏ, gửi đến những người phụ nữ tuyệt vời nhân ngày 20/10."
+    />
+    <title>20/10 — Bí mật dành riêng cho bạn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/puzzle.css" />
+    <script src="js/wishes.js" defer></script>
+    <script src="js/effects.js" defer></script>
+    <script src="js/mystery.js" defer></script>
+    <script src="js/music.js" defer></script>
+    <script src="js/bagua.js" defer></script>
+    <script src="js/puzzle.js" defer></script>
+    <script src="js/main.js" defer></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+    <div id="petal-layer" aria-hidden="true"></div>
+
+    <!-- ================= MÀN HÌNH GHÉP ẢNH MỞ ĐẦU (INTRO PUZZLE) ================= -->
+    <section
+      class="puzzle-intro"
+      id="puzzle-intro"
+      aria-label="Màn hình ghép tranh kỷ niệm 20/10"
+    >
+      <div class="puzzle-ambient puzzle-ambient-1" aria-hidden="true"></div>
+      <div class="puzzle-ambient puzzle-ambient-2" aria-hidden="true"></div>
+
+      <div class="puzzle-container">
+        <div class="puzzle-header">
+          <div class="puzzle-eyebrow">✦ THỬ THÁCH MỞ ĐẦU 20/10 ✦</div>
+          <h1 class="puzzle-title">Mảnh Ghép <em>Kỷ Niệm</em></h1>
+          <p class="puzzle-desc">
+            Bức ảnh kỷ niệm được chia làm 6 mảnh. Hãy ghép đúng vị trí để mở
+            khóa cánh cửa bước vào khu vườn bí mật 20/10.
+          </p>
+          <div class="puzzle-instruction-pill">
+            <span>💡</span> Chạm 2 mảnh để đổi chỗ hoặc vuốt kéo thả
+          </div>
+        </div>
+
+        <div class="puzzle-board-card">
+          <div
+            class="puzzle-board"
+            id="puzzle-board"
+            role="region"
+            aria-label="Khung ghép 6 mảnh ảnh"
+          ></div>
+        </div>
+
+        <div class="puzzle-controls">
+          <button
+            class="puzzle-btn"
+            id="puzzle-btn-preview"
+            type="button"
+            title="Xem ảnh mẫu hoàn chỉnh"
+          >
+            👁 Xem ảnh mẫu
+          </button>
+          <button
+            class="puzzle-btn"
+            id="puzzle-btn-shuffle"
+            type="button"
+            title="Xáo trộn lại các mảnh"
+          >
+            🔀 Xáo lại
+          </button>
+          <button
+            class="puzzle-btn is-active"
+            id="puzzle-btn-hints"
+            type="button"
+            title="Bật/tắt số thứ tự mảnh ghép"
+          >
+            🔢 Gợi ý số
+          </button>
+          <button
+            class="puzzle-btn puzzle-btn-primary"
+            id="puzzle-btn-skip"
+            type="button"
+            title="Tự động hoàn thành và mở khóa ngay"
+          >
+            ⏩ Vào trang luôn
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal xem trước ảnh mẫu -->
+      <div
+        class="puzzle-preview-modal"
+        id="puzzle-preview-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Ảnh mẫu đầy đủ"
+      >
+        <div class="puzzle-preview-card">
+          <h4>Bức Ảnh Gốc Kỷ Niệm</h4>
+          <div class="puzzle-preview-img-wrap">
+            <img
+              id="puzzle-preview-image"
+              src="img.jpg"
+              alt="Ảnh kỷ niệm đầy đủ"
+              class="puzzle-preview-img"
+            />
+            <div class="puzzle-preview-grid-overlay" aria-hidden="true">
+              <div class="puzzle-preview-grid-cell"><span>1</span></div>
+              <div class="puzzle-preview-grid-cell"><span>2</span></div>
+              <div class="puzzle-preview-grid-cell"><span>3</span></div>
+              <div class="puzzle-preview-grid-cell"><span>4</span></div>
+              <div class="puzzle-preview-grid-cell"><span>5</span></div>
+              <div class="puzzle-preview-grid-cell"><span>6</span></div>
+            </div>
+          </div>
+          <button
+            class="puzzle-btn puzzle-btn-primary"
+            id="puzzle-close-preview"
+            type="button"
+          >
+            Đã hiểu, quay lại ghép ảnh
+          </button>
+        </div>
+      </div>
+
+      <!-- Banner chúc mừng ghép đúng -->
+      <div
+        class="puzzle-success-banner"
+        id="puzzle-success-banner"
+        role="status"
+        aria-live="assertive"
+      >
+        <div class="puzzle-success-card">
+          <div class="puzzle-success-icon">💐✨</div>
+          <h3>Ghép Tranh Thành Công!</h3>
+          <p>
+            Tuyệt vời! Bạn đã ghép đúng bức ảnh kỷ niệm ấm áp.<br />
+            Cánh cửa bí mật 20/10 đang mở ra để chào đón bạn...
+          </p>
+          <div class="puzzle-success-actions">
+            <button
+              class="puzzle-btn puzzle-btn-primary"
+              id="puzzle-enter-site"
+              type="button"
+            >
+              Khám phá khu vườn ngay ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ================= KẾT THÚC MÀN HÌNH GHÉP ẢNH ================= -->
+
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="Về đầu trang">
+        <span class="brand-mark">✿</span>
+        <span
+          >20<span class="brand-slash">/</span>10
+          <small>SECRET GARDEN</small></span
+        >
+      </a>
+      <nav class="desktop-nav" aria-label="Điều hướng chính">
+        <a href="#wishes">Lời chúc</a>
+        <a href="#letters">Bí mật</a>
+        <a href="#gift">Món quà</a>
+      </nav>
+      <div class="header-tools">
+        <button
+          class="tool-toggle"
+          id="puzzle-replay"
+          type="button"
+          title="Mở lại trò chơi ghép ảnh kỷ niệm"
+        >
+          🧩 <span id="puzzle-replay-label">Ghép ảnh</span>
+        </button>
+        <button
+          class="tool-toggle"
+          id="effects-toggle"
+          type="button"
+          aria-pressed="true"
+          title="Bật/tắt hạt sáng và cánh hoa"
+        >
+          ✧ <span id="effects-label">Hiệu ứng</span>
+        </button>
+        <button
+          class="tool-toggle fullscreen-toggle"
+          id="fullscreen-toggle"
+          type="button"
+          aria-pressed="false"
+          title="Bật/tắt toàn màn hình"
+        >
+          ⛶
+        </button>
+        <button
+          class="music-toggle"
+          id="music-toggle"
+          type="button"
+          aria-pressed="false"
+        >
+          <span class="music-icon">♫</span
+          ><span id="music-label">Bật nhạc</span>
+        </button>
+        <audio
+          id="bg-music"
+          src="assets/audio/piano canhhoaphaitan.mp3"
+          preload="auto"
+          loop
+        ></audio>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero section" id="home">
+        <div class="hero-orbit orbit-one" aria-hidden="true"></div>
+        <div class="hero-orbit orbit-two" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow">
+            <span class="eyebrow-line"></span> A LITTLE MAGIC FOR YOU
+            <span class="eyebrow-line"></span>
+          </p>
+          <p class="hero-date">20 · 10 · 2026</p>
+          <h1>
+            20/10 <br />Dành riêng cho<em>
+              <br />những bông hoa xinh<br />
+              đẹp</em
+            >
+          </h1>
+          <p class="hero-copy">
+            Có một khu vườn nhỏ đang chờ được mở cửa.<br />Ở đó, mỗi cánh hoa
+            cất giữ một lời chúc dành cho bạn.
+          </p>
+          <button class="button button-primary" id="enter-garden" type="button">
+            <span>Mở cánh cửa bí mật</span><span class="button-arrow">↗</span>
+          </button>
+          <div class="hero-footnote">
+            <span class="tiny-star">✦</span> Một món quà nhỏ dành cho những
+            người phụ nữ tuyệt vời <span class="tiny-star">✦</span>
+          </div>
+        </div>
+        <div class="hero-flower flower-left" aria-hidden="true">✿</div>
+        <div class="hero-flower flower-right" aria-hidden="true">✿</div>
+        <a class="scroll-cue" href="#wishes"
+          ><span></span> KHÁM PHÁ PHÍA DƯỚI</a
+        >
+      </section>
+
+      <section class="section wishes-section reveal" id="wishes">
+        <div class="section-heading">
+          <p class="eyebrow">01 / A WISH FOR YOU</p>
+          <h2>Ngày hôm nay,<br /><em>hãy để bạn được tỏa sáng.</em></h2>
+          <p>
+            Không cần phải trở thành ai khác. Bạn đã đủ đặc biệt theo cách của
+            riêng mình.
+          </p>
+        </div>
+        <div class="wish-feature">
+          <div class="wish-number">20<span>/</span>10</div>
+          <div class="wish-feature-text">
+            <span class="gold-label">GỬI ĐẾN BẠN</span>
+            <p>
+              Chúc bạn luôn giữ được ánh sáng của riêng mình — đủ dịu dàng để
+              yêu thương, đủ mạnh mẽ để bước qua thử thách và đủ tự tin để đón
+              nhận những điều tốt đẹp.
+            </p>
+            <span class="signature">Bình gửi tặng ✦</span>
+          </div>
+        </div>
+        <div class="wish-grid" id="wish-grid" aria-live="polite"></div>
+        <button class="button button-ghost" id="new-wish" type="button">
+          Gửi mình một lời chúc khác <span>↻</span>
+        </button>
+        <p class="tiny-note" id="wish-status" aria-live="polite"></p>
+      </section>
+
+      <section class="section letters-section reveal" id="letters">
+        <div class="section-heading">
+          <p class="eyebrow">02 / SEALED WITH LOVE</p>
+          <h2>Những phong bì<br /><em>chưa từng được mở.</em></h2>
+          <p>
+            Mỗi chiếc phong bì giấu một lời nhắn. Hãy chọn bằng trái tim của
+            bạn.
+          </p>
+        </div>
+        <div class="envelope-grid">
+          <button class="envelope-card" data-letter="0" type="button">
+            <span class="envelope-number">LETTER Nº 01</span>
+            <span class="envelope-art"
+              ><span class="envelope-back"></span
+              ><span class="envelope-front"></span
+              ><span class="wax-seal">✿</span></span
+            >
+            <span class="envelope-title">Một lời gửi bạn</span
+            ><span class="envelope-subtitle">Mở khi bạn cần được vỗ về</span>
+          </button>
+          <button class="envelope-card" data-letter="1" type="button">
+            <span class="envelope-number">LETTER Nº 02</span>
+            <span class="envelope-art"
+              ><span class="envelope-back"></span
+              ><span class="envelope-front"></span
+              ><span class="wax-seal">✦</span></span
+            >
+            <span class="envelope-title">Một điều bí mật</span
+            ><span class="envelope-subtitle">Mở khi bạn muốn mỉm cười</span>
+          </button>
+          <button class="envelope-card" data-letter="2" type="button">
+            <span class="envelope-number">LETTER Nº 03</span>
+            <span class="envelope-art"
+              ><span class="envelope-back"></span
+              ><span class="envelope-front"></span
+              ><span class="wax-seal">♡</span></span
+            >
+            <span class="envelope-title">Một điều ước</span
+            ><span class="envelope-subtitle">Mở khi bạn sẵn sàng ước mơ</span>
+          </button>
+        </div>
+        <div class="letters-progress">
+          <span id="letter-count">0</span> / 3 lá thư đã mở
+        </div>
+      </section>
+
+      <section class="section gift-section reveal" id="gift">
+        <div class="gift-glow" aria-hidden="true"></div>
+        <div class="section-heading">
+          <p class="eyebrow">03 / THE FINAL SURPRISE</p>
+          <h2>Một món quà<br /><em>đang chờ bạn.</em></h2>
+          <p>Hãy mở món quà bình đz gửi tới bạn 🐧</p>
+        </div>
+        <div class="gift-wrap">
+          <div class="gift-lock" id="gift-lock">
+            <span>✧</span><span id="gift-lock-text">BÍ MẬT CHƯA MỞ</span>
+          </div>
+          <button
+            class="gift-box"
+            id="gift-box"
+            type="button"
+            aria-label="Mở hộp quà"
+          >
+            <span class="gift-lid"></span><span class="gift-bow"></span
+            ><span class="gift-ribbon"></span><span class="gift-body"></span
+            ><span class="gift-sparkle">✦</span>
+          </button>
+          <p class="gift-hint" id="gift-hint">
+            Món quà sẽ mở khi bạn khám phá đủ các bí mật.
+          </p>
+          <button class="button button-primary" id="open-gift" type="button">
+            Mở món quà cuối cùng <span>✧</span>
+          </button>
+        </div>
+        <div class="final-message" id="final-message" hidden>
+          <div class="final-ornament">✦　❀　✦</div>
+          <p class="eyebrow">A LITTLE WISH, JUST FOR YOU</p>
+          <h3>Chúc mừng ngày<br /><em>20 tháng 10!</em></h3>
+          <p>
+            Chúc bạn có thật nhiều bình yên trong lòng, ánh sáng trong đôi mắt
+            và những người chân thành bên cạnh. Mong rằng bạn luôn được yêu
+            thương, được lắng nghe và được sống cuộc đời mà mình hằng mong muốn.
+          </p>
+          <p class="final-signature">
+            Bạn xứng đáng với những điều tốt đẹp. Hôm nay và mọi ngày. ♡
+          </p>
+          <button
+            class="button button-ghost"
+            id="celebrate-again"
+            type="button"
+          >
+            Thắp sáng bầu trời lần nữa ✦
+          </button>
+        </div>
+      </section>
+
+      <section class="closing-section reveal" id="closing">
+        <div class="closing-line"></div>
+        <p class="closing-quote">
+          “Mong bạn luôn là một đóa hoa<br />ngay cả trong những ngày bình
+          thường nhất.”
+        </p>
+        <p class="closing-small">HAPPY VIETNAMESE WOMEN'S DAY · 20.10.2026</p>
+        <div class="closing-actions">
+          <a href="#home" class="back-top">Trở về đầu trang ↑</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span
+        >Được tạo nên bằng một chút phép màu và rất nhiều sự trân trọng.</span
+      >
+      <span>✦ 20/10 ✦</span>
+    </footer>
+
+    <div
+      class="modal"
+      id="letter-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      hidden
+    >
+      <div class="modal-backdrop" data-close-modal></div>
+      <article class="letter-paper">
+        <button
+          class="modal-close"
+          type="button"
+          data-close-modal
+          aria-label="Đóng thư"
+        >
+          ×
+        </button>
+        <span class="paper-flower">✿</span>
+        <p class="eyebrow">A SECRET NOTE FOR YOU</p>
+        <h3 id="modal-title">Một lời nhắn dành cho bạn</h3>
+        <p id="modal-body"></p>
+        <span class="paper-signature">Gửi bạn, bằng sự trân trọng ♡</span>
+        <button class="button button-ghost" type="button" data-close-modal>
+          Gấp lá thư lại
+        </button>
+      </article>
+    </div>
+
+    <div
+      class="modal gift-modal"
+      id="gift-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="gift-modal-title"
+      hidden
+    >
+      <div class="modal-backdrop" data-close-gift></div>
+      <article class="gift-letter-card">
+        <button
+          class="modal-close"
+          type="button"
+          data-close-gift
+          aria-label="Đóng món quà"
+        >
+          ×
+        </button>
+        <div class="gift-art" aria-hidden="true">
+          <span>✧</span><span>💐</span><span>♡</span>
+        </div>
+        <p class="eyebrow">A LITTLE GIFT FOR YOU · 20/10</p>
+        <h3 id="gift-modal-title">Gửi bạn, một điều tốt đẹp</h3>
+        <p class="gift-letter-copy">
+          Mong bạn luôn nhớ rằng mình xứng đáng được yêu thương, không chỉ trong
+          ngày hôm nay mà cả những ngày bình thường nhất. Chúc bạn đủ dịu dàng
+          để yêu đời, đủ mạnh mẽ để vượt qua những ngày khó khăn, và luôn gặp
+          được những người trân trọng trái tim chân thành của bạn.
+        </p>
+        <p class="gift-letter-sign">Chúc bạn một ngày 20/10 thật rực rỡ ♡</p>
+        <div class="gift-modal-actions">
+          <button class="button button-ghost" type="button" data-close-gift>
+            Đóng món quà
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <nav class="page-controls" id="page-controls" aria-label="Chuyển trang">
+      <span class="page-counter" id="page-counter">TRANG 01 / 06</span>
+      <button class="page-control-btn" id="page-prev" type="button" disabled>
+        ← Trước
+      </button>
+      <div class="page-dots" id="page-dots" aria-label="Chọn trang"></div>
+      <button class="page-control-btn" id="page-next" type="button">
+        Tiếp →
+      </button>
+    </nav>
+
+    <div
+      class="page-loader"
+      id="page-loader"
+      role="status"
+      aria-live="assertive"
+      aria-hidden="true"
+    >
+      <div class="loader-content">
+        <div class="bagua" aria-hidden="true">
+          <canvas id="bagua-particles"></canvas>
+          <div class="taiji"></div>
+        </div>
+        <div class="loader-title">Cánh cửa đang xoay chuyển</div>
+        <div class="loader-subtitle" id="loader-subtitle">
+          Đang mở một bí mật mới
+        </div>
+        <div class="loader-progress"><span></span></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <noscript
+      ><p class="noscript">
+        Website cần bật JavaScript để sử dụng các hiệu ứng và trò chơi bí mật.
+      </p></noscript
+    >
+  </body>
+</html>
